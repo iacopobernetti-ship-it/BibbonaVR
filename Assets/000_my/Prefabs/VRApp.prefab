@@ -254,6 +254,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Artemis.Places.PlacePanel
   tabTitle: Places
+  columns: 2
+  rowsPerPage: 6
+  rowHeight: 40
 --- !u!114 &2810105802744417607
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -291,6 +294,18 @@ MonoBehaviour:
   lodMin: 0
   lodMax: 5
   budgetSteps: 0a000000140000001e000000280000003c0000005000000064000000
+  farSteps:
+  - 20
+  - 30
+  - 50
+  - 75
+  - 100
+  - 150
+  - 200
+  - 300
+  - 500
+  - 1000
+  - 15000
 --- !u!114 &3029491284115879788
 MonoBehaviour:
   m_ObjectHideFlags: 0
