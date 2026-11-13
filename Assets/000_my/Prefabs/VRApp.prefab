@@ -202,7 +202,7 @@ MonoBehaviour:
   - Thermal
   - Colors
   - Tuning
-  panelSize: {x: 500, y: 500}
+  panelSize: {x: 700, y: 500}
   showDiagnostics: 1
   diagnosticsHeight: 116
   alwaysOnTop: 0
@@ -228,19 +228,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Artemis.Places.PlaceFlow
   hub:
-    sceneName: Piazza
-    label: Piazza M. Signori
+    sceneName: Gate
+    label: Gate of the village
   places:
   - sceneName: Street01
-    label: Via Solferino
+    label: Via della Squadra
   - sceneName: Street02
-    label: Vilage Gate
+    label: Via delle mura sud
   - sceneName: Street03
-    label: Via Montanara
-  - sceneName: Street04
-    label: Via Curtatone
+    label: Via delle mura nord
+  - sceneName: Street05
+    label: Pieve S. Ilario
   - sceneName: Street06
-    label: Church side
+    label: Piazza Grmasci
+  - sceneName: Street07
+    label: Vicolo degli Archi
+  - sceneName: Street08
+    label: Via delle mura est
+  - sceneName: Street11
+    label: Vicolo degli Archi
+  - sceneName: Street13
+    label: Piazza della vittoria
+  - sceneName: Street14
+    label: Via Roma
+  - sceneName: Street15
+    label: Via Piave
 --- !u!114 &4409828608492837423
 MonoBehaviour:
   m_ObjectHideFlags: 0
