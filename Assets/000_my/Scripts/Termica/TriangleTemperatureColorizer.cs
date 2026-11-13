@@ -56,6 +56,7 @@ public class TriangleTemperatureColorizer : MonoBehaviour
     public float LastColorMax { get; private set; }
     private bool _building;
     private bool _recolorPending;
+    private string _lastMapStats = "";   // numeri dell'ultimo abbinamento (scritto dal thread di calcolo)
 
     private void Awake()
     {
@@ -210,7 +211,7 @@ public class TriangleTemperatureColorizer : MonoBehaviour
 
             if (indexMap == null)
             {
-                Debug.LogError("BuildThenColorAsync: centroid mapping failed.");
+                Debug.LogError("BuildThenColorAsync: centroid mapping failed. " + _lastMapStats);
                 return;
             }
 
@@ -371,6 +372,12 @@ public class TriangleTemperatureColorizer : MonoBehaviour
                 unmatched++;
             }
         }
+
+        // I numeri dell'abbinamento, per il log: "matching failed" da solo non dice se manca un
+        // triangolo su mille (file quasi uguale) o se non torna nulla (file diverso).
+        _lastMapStats = $"triangoli in scena {triangleCount}, facce server {debugFaces.Length}, " +
+                        $"esatti {matchedExact}, vicini {matchedFallback}, scoperti {unmatched}, " +
+                        $"trasformazione migliore {best.matches} corrispondenze.";
 
         if (matchedExact + matchedFallback != triangleCount)
             return null;

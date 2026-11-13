@@ -1,3 +1,7 @@
+// =====================================================================================
+// VERSIONE CaldanaVR  —  differenza dalla versione SilvoVR: renderEnvironment = true
+// (ambiente del rilievo ACCESO di base). Per il resto i due file sono identici.
+// =====================================================================================
 using System.IO;
 using LCCCore;
 using UnityEngine;
@@ -128,12 +132,21 @@ public class LCCRendererVR : MonoBehaviour
         // In Editor E NELLA BUILD PER PC l'SDK vuole PlatformType.PC: prima era solo
         // UNITY_EDITOR, e qualunque build diceva "Quest" — giusto per il visore, sbagliato per la
         // versione da scrivania, dove l'SDK prenderebbe la strada mobile su una scheda video da PC.
-        // In Editor l'SDK vuole PlatformType.PC. Il vecchio interruttore 'skipInEditor', che
+        // Il vecchio interruttore 'skipInEditor', che
         // impediva del tutto il caricamento per evitare la diplopia da Play Mode via Link, e'
         // stato RIMOSSO: la diplopia non si presenta piu' con la preview attuale, e quel flag era
         // un valore serializzato in quattro scene — quattro posti in cui poteva restare indietro
         // senza che nulla lo segnalasse, se non uno splat che non compare.
-        m_manager.SetPlatformType(PlatformType.PC);
+        // VR SUL PC (Link): con visore attivo si puo' far lavorare l'SDK in modalita' Quest
+        // invece che PC. Sul visore vero la modalita' Quest disegna correttamente entrambi gli
+        // occhi; in modalita' PC, via Link, gli splat comparivano solo nell'occhio DESTRO — e il
+        // manuale indica SetMainCamera/AddCamera come "solo PC/Mac", cioe' pensati per una camera
+        // sola, non per due occhi. E' una prova: si accende con pcXrAsQuest.
+        mobilePath = pcXrAsQuest && UnityEngine.XR.XRSettings.isDeviceActive;
+        m_manager.SetPlatformType(mobilePath ? PlatformType.Quest : PlatformType.PC);
+        if (mobilePath)
+            Debug.Log($"[LCCRendererVR] '{gameObject.scene.name}': visore attivo sul PC -> " +
+                      "SDK in modalita' Quest (prova per gli occhi).");
 
         // Su PC, con dati LOCALI, l'SDK sceglie da solo fra due percorsi: "Full Load" (tutto il
         // dato in un buffer suo) se il livello piu' fine ha meno splat della soglia, altrimenti
@@ -142,7 +155,8 @@ public class LCCRendererVR : MonoBehaviour
         // compreso), stessi log, stessa camera — eppure l'ambiente compariva solo via HTTP.
         // Abbassando la soglia al minimo ammesso (100 = 1 milione) il dato locale prende la
         // stessa strada di quello remoto. Solo PC/Mac: altrove l'SDK rifiuta la chiamata.
-        if (forceChunkOnPc)
+        // In modalita' Quest l'SDK rifiuta questa chiamata (solo PC/Mac): la si salta.
+        if (forceChunkOnPc && !mobilePath)
         {
             m_manager.SetFullRenderSplat(100);
             Debug.Log($"[LCCRendererVR] '{gameObject.scene.name}': soglia Full Load al minimo " +
@@ -233,8 +247,16 @@ public class LCCRendererVR : MonoBehaviour
     /// Sul visore il percorso e' gia' tutto '/', e li' l'SDK usa la piattaforma Quest.
     /// Gli URL HTTP non passano di qui: l'SDK li tratta a parte, e li' '/' va benissimo.
     /// </summary>
-    private string LocalPath(string root) =>
-        Path.GetFullPath(Path.Combine(root, localRelativePath));
+    private string LocalPath(string root)
+    {
+        string p = Path.GetFullPath(Path.Combine(root, localRelativePath));
+        // In modalita' Quest (prova VR sul PC) l'SDK ragiona come su Android, dove i percorsi
+        // sono tutti '/': gli si da' quella forma. Con PC servono invece i '\' nativi.
+        return mobilePath ? p.Replace('\\', '/') : p;
+    }
+
+    /// Vero quando, sul PC, l'SDK lavora in modalita' Quest (vedi pcXrAsQuest).
+    private bool mobilePath;
 
     /// <summary>
     /// Applica i budget PRIMA di GetRender, nell'ordine prescritto dalla guida
@@ -276,12 +298,23 @@ public class LCCRendererVR : MonoBehaviour
              "prima che la regolazione lo riporti giu'. In piazza alto, per vedere l'ambiente.")]
     [Min(0)] public float maxViewDistance = 0f;
 
+    [Tooltip("Far di DEFAULT di questa scena (m): la distanza di vista ottimale misurata per " +
+             "questo luogo. Se impostato, AdaptiveFar la tiene FISSA invece di regolarla da solo; " +
+             "dalla scheda Tuning si puo' ancora passare ad altri valori o all'automatico. " +
+             "0 = regolazione automatica, come prima.")]
+    [Min(0)] public float defaultFar = 0f;
+
     [Header("Percorso di rendering su PC")]
     [Tooltip("Solo Editor e build per PC: forza il percorso a blocchi (Chunk) anche con dati " +
              "locali, come avviene sempre con HTTP. Con il percorso Full Load, scelto dall'SDK per " +
              "i dati locali piu' piccoli, l'ambiente (env.sog) non compariva. Sul visore non ha " +
              "effetto: li' l'SDK usa sempre il suo percorso mobile.")]
     public bool forceChunkOnPc = true;
+
+    [Tooltip("PROVA per la VR sul PC via Link: se un visore e' attivo, l'SDK lavora in modalita' " +
+             "Quest invece che PC. In modalita' PC, via Link, gli splat comparivano in un occhio " +
+             "solo. Senza visore (build per i revisori, Editor normale) non cambia niente.")]
+    public bool pcXrAsQuest = false;
 
     [Header("Ambiente")]
     [Tooltip("Disegna l'AMBIENTE del rilievo: la nuvola a bassa precisione che riempie lo sfondo " +

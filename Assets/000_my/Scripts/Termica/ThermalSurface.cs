@@ -21,7 +21,9 @@ namespace Artemis.Thermal
     /// CONDIZIONE: la mesh in scena deve essere lo stesso file caricato sul server. Il colorizer
     /// abbina ogni triangolo della scena a una faccia del server e, se anche uno solo resta
     /// scoperto, rinuncia. Il server puo' avere qualche faccia in piu' (triangoli degeneri che
-    /// Unity scarta all'import): quelle restano senza abbinamento, ed e' normale.
+    /// Unity scarta all'import): quelle restano senza abbinamento, ed e' normale. Ma solo poche:
+    /// oltre Max Missing Percent (10%) ci si ferma subito con il nome del modello a schermo,
+    /// perche' e' quasi sempre il Model Id di un'altra scena.
     ///
     /// Va sull'oggetto della mesh termica (quello con MeshFilter e MeshRenderer), insieme a
     /// TemperatureApiClient (user_id, model_id) e TriangleTemperatureColorizer. E' un oggetto
@@ -43,6 +45,13 @@ namespace Artemis.Thermal
         [Tooltip("Usa la resa esatta (se il materiale e' assegnato). Si cambia anche in Play, per " +
                  "confrontare le due rese.")]
         [SerializeField] private bool useExactOverlay = true;
+
+        [Header("Controllo del modello")]
+        [Tooltip("Quante facce del server (in %) possono mancare in scena prima di dichiarare che " +
+                 "la mesh non e' il file caricato. Unity scarta all'import i triangoli degeneri: " +
+                 "misurato 2,4% su Caldana01LP. Oltre questa soglia e' quasi sempre un Model Id " +
+                 "sbagliato (copiato da un'altra scena).")]
+        [Range(0f, 50f)] [SerializeField] private float maxMissingPercent = 10f;
 
         public bool Busy { get; private set; }
         public bool HasResult { get; private set; }
@@ -221,7 +230,23 @@ namespace Artemis.Thermal
             if (!HasResult && sceneTris > serverFaces)
             {
                 Fail($"Model mismatch: server '{api.modelId}' has {serverFaces} faces, " +
-                     $"scene mesh has {sceneTris} triangles.");
+                     $"scene mesh has {sceneTris} triangles. Check Model Id.");
+                LogMismatch(serverFaces, sceneTris);
+                yield break;
+            }
+            // ...ma anche il caso "piu' facce sul server" ha un limite. I triangoli degeneri sono
+            // pochi: misurato su Caldana01LP, 512 su 21496 (2,4%). Se ne mancano molti di piu' non
+            // e' pulizia dell'import, e' un ALTRO file — tipicamente il Model Id rimasto quello
+            // della scena da cui si e' copiata questa (misurato a Bibbona, scena 'Gate': modello
+            // 'Bibbona01', 42306 facce contro 31925 triangoli, il 25% in meno). Ci si ferma qui,
+            // con il nome del modello a schermo, invece di aspettare la simulazione e minuti di
+            // abbinamento per arrivare a un "matching failed" generico.
+            float missing = (serverFaces - sceneTris) / (float)serverFaces;
+            if (!HasResult && missing * 100f > maxMissingPercent)
+            {
+                Fail($"Wrong surface model? Server '{api.modelId}' has {serverFaces} faces, " +
+                     $"scene mesh {sceneTris} triangles ({missing:P0} fewer). Check Model Id.");
+                LogMismatch(serverFaces, sceneTris);
                 yield break;
             }
             if (!HasResult && sceneTris < serverFaces)
@@ -270,6 +295,18 @@ namespace Artemis.Thermal
             SetOverlay(overlayVisible, overlayOpacity);
             SetStatus($"Air {air:F1} C  ·  surface {SurfaceMin:F1} - {SurfaceMax:F1} C (mean {SurfaceMean:F1})");
             Debug.Log($"[ThermalSurface] '{api.modelId}': {Status}");
+        }
+
+        /// La spiegazione lunga va nel log, non in HUD: li' c'e' posto per due righe.
+        private void LogMismatch(int serverFaces, int sceneTris)
+        {
+            Debug.LogWarning(
+                $"[ThermalSurface] scena '{gameObject.scene.name}', oggetto '{name}': il modello " +
+                $"'{api.modelId}' sul server ha {serverFaces} facce, la mesh in scena {sceneTris} " +
+                "triangoli. Controlla in quest'ordine: (1) Model Id su Temperature Api Client — e' " +
+                "quello caricato per QUESTO luogo? (2) il modello importato ha piu' oggetti figli con " +
+                "mesh? Thermal Surface ne colora uno solo: la mesh va esportata come oggetto unico. " +
+                "(3) il file in scena e quello caricato sul server sono la stessa esportazione?");
         }
 
         private void SetStatus(string s)
