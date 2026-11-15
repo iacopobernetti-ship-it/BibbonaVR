@@ -1122,10 +1122,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LCCRendererVR
   m_manager: {fileID: 441486804}
-  m_FilePath: http://www.perclabresearch.it/LCC/Bibbona/01/lcc2-result/Bibbona01.lcc2
+  m_FilePath: http://www.perclabresearch.it/LCC/Bibbona/02/lcc2-result/Bibbona02.lcc2
   useProjectSource: 1
   source: 0
-  localRelativePath: LCC/01/Bibbona01.lcc2
+  localRelativePath: LCC/02/Bibbona02.lcc2
   splatDepthWrite: 1
   maxBufferSplat10k: 0
   maxRenderSplats10k: 0
@@ -1514,7 +1514,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TemperatureApiClient
   baseUrl: http://80.211.133.205:8006
   userId: BibbonaVR
-  modelId: Bibbona01
+  modelId: Bibbona02
   meteoStationTemperatureMax: 35
   year: 2025
   dayOfYear: 227
