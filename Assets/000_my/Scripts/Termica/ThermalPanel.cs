@@ -39,7 +39,7 @@ namespace Artemis.Thermal
 
         // Di ciascun visore, mai in rete.
         private static bool overlayOn = true;
-        private static float opacity = 0.6f;
+        private static float opacity = 0.3f;
 
         private VrHud hud;
         private bool built;

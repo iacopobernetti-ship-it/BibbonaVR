@@ -241,8 +241,6 @@ MonoBehaviour:
     label: Pieve S. Ilario
   - sceneName: Street06
     label: Piazza Grmasci
-  - sceneName: Street07
-    label: Vicolo degli Archi
   - sceneName: Street08
     label: Via delle mura est
   - sceneName: Street11
@@ -341,6 +339,8 @@ MonoBehaviour:
   upRelativePerSecond: 0.6
   settleSeconds: 1.5
   pauseMs: 1000
+  refreshGrowth: 1.25
+  maxRefreshDelay: 1
   showInHud: 1
 --- !u!114 &3522571547040765267
 MonoBehaviour:
