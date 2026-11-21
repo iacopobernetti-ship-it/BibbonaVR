@@ -35,6 +35,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/000_my/Scenes/Street13.unity
     guid: 78a026a892b8fca4fa6333c8fcfba41b
+  - enabled: 1
+    path: Assets/000_my/Scenes/Street14.unity
+    guid: 23a838b688f13644397653a2b34bb232
+  - enabled: 1
+    path: Assets/000_my/Scenes/Street15.unity
+    guid: 40274d7f872e8024794dc765b15f4512
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 18b16e67f44964a4b9b517f691d1e468, type: 2}

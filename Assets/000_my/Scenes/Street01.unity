@@ -1122,10 +1122,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LCCRendererVR
   m_manager: {fileID: 441486804}
-  m_FilePath: http://www.perclabresearch.it/LCC/Bibbona/02/lcc2-result/Bibbona02.lcc2
+  m_FilePath: http://www.perclabresearch.it/LCC/Bibbona/01/lcc2-result/Bibbona01.lcc2
   useProjectSource: 1
   source: 0
-  localRelativePath: LCC/02/Bibbona02.lcc2
+  localRelativePath: LCC/01/Bibbona01.lcc2
   splatDepthWrite: 1
   maxBufferSplat10k: 0
   maxRenderSplats10k: 0
@@ -1342,7 +1342,7 @@ Transform:
   m_GameObject: {fileID: 2089615634}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0.78, y: -0.21, z: -4.18}
+  m_LocalPosition: {x: 3.8, y: 0.123, z: -33.046}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
